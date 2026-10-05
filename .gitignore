@@ -19,7 +19,6 @@ dist-ssr/
 .nitro/
 
 # Environment files and secrets (NEVER commit to GitHub / Lovable)
-.env
 .env.local
 .env.*.local
 .env.development.local
