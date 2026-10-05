@@ -39,7 +39,7 @@ const DishGlassCard = memo(function DishGlassCard({
     <motion.article
       initial={reduce ? { opacity: 0 } : { opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{
         duration: 0.8,
         delay: 0.06 * Math.min(index, 6),
@@ -47,7 +47,6 @@ const DishGlassCard = memo(function DishGlassCard({
       }}
       whileHover={reduce ? undefined : { y: -12, scale: 1.02 }}
       className="glass-card group w-[calc(100vw-2.5rem)] shrink-0 snap-center sm:w-auto sm:max-w-none sm:shrink"
-      style={{ contentVisibility: "auto" }}
       data-accent={dish.accent}
     >
       <div className="glass-card__top">
