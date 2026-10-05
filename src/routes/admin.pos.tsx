@@ -145,7 +145,7 @@ export function CounterPOSPage() {
   const categories = useMemo(() => {
     const set = new Set<string>();
     dishes.forEach((d) => {
-      if (d.category) set.add(d.category);
+      if (d.categoryName) set.add(d.categoryName);
     });
     return ["all", ...Array.from(set)];
   }, [dishes]);
@@ -153,7 +153,7 @@ export function CounterPOSPage() {
   // Filtered dishes
   const filteredDishes = useMemo(() => {
     return dishes.filter((dish) => {
-      const matchCat = activeCategory === "all" || dish.category === activeCategory;
+      const matchCat = activeCategory === "all" || dish.categoryName === activeCategory;
       const matchQuery =
         !searchQuery.trim() ||
         dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -179,7 +179,7 @@ export function CounterPOSPage() {
 
   // Add item to cart
   const handleAddToCart = (dish: Dish, sizeName = "Regular", priceOverride?: number) => {
-    const price = priceOverride ?? dish.price;
+    const price = priceOverride ?? (parseFloat(String(dish.price).replace(/[^0-9.]/g, "")) || 0);
     setCart((prev) => {
       const existing = prev.find((item) => item.dish.id === dish.id && item.size === sizeName);
       if (existing) {
@@ -428,7 +428,7 @@ export function CounterPOSPage() {
                   </span>
                 </div>
                 <p className="text-[11px] text-muted-foreground line-clamp-1 mb-2">
-                  {dish.desc || dish.category || "Freshly cooked"}
+                  {dish.desc || dish.categoryName || "Freshly cooked"}
                 </p>
                 <div className="mt-auto flex items-center justify-between pt-1 border-t border-border/40">
                   <span className="text-xs font-black text-foreground">Rs. {Number(dish.price).toLocaleString()}</span>
