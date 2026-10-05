@@ -2781,16 +2781,31 @@ html[data-kmg-loader-seen] .opening { display: none; }
 .opening-meta {
   display: flex;
   justify-content: flex-end;
+  align-items: baseline;
+  gap: .9rem;
   margin-top: .85rem;
   font-family: var(--font-sans, sans-serif);
-  font-size: .58rem;
   font-weight: 700;
   letter-spacing: .3em;
   text-transform: uppercase;
   opacity: .78;
 }
-.opening-phase { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-.opening-pct { color: var(--brass); font-variant-numeric: tabular-nums; letter-spacing: 0; min-width: 4ch; text-align: right; }
+.opening-phase { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .58rem; }
+.opening-pct {
+  color: var(--brass);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+  font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+  line-height: 1;
+  min-width: 4ch;
+  text-align: right;
+  animation: pct-tick .28s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes pct-tick {
+  from { opacity: .35; transform: translateY(.35rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 @keyframes status-in {
   from { opacity: 0; transform: translateY(1rem); }

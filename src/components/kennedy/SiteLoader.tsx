@@ -54,7 +54,8 @@ export function SiteLoader() {
     document.body.style.overflow = "hidden";
 
     let real = 0; // 0..1 share of actual work finished
-    let done = false;
+    let done = false; // page is ready — glide to 100% from here
+    let landed = false; // counter has visibly hit 100%
     let displayed = 0;
     let eased = 0;
     const timers: number[] = [];
@@ -103,18 +104,26 @@ export function SiteLoader() {
       }
 
       const ready = (real >= 1 && elapsed >= MIN_MS) || elapsed >= MAX_MS;
-      if (ready && !done) {
-        done = true;
-        setProgress(100);
-        timers.push(
-          window.setTimeout(() => setOpening(true), 100),
-          window.setTimeout(() => {
-            setVisible(false);
-            document.body.style.overflow = "";
-          }, 100 + OPEN_MS),
-        );
+      if (ready && !done) done = true;
+
+      if (done && !landed) {
+        // The page is ready: glide the counter the rest of the way so it
+        // always lands on a visible 100% before the curtains part.
+        eased += (100 - eased) * 0.16;
+        if (Math.round(eased) >= 100) {
+          landed = true;
+          setProgress(100);
+          // Hold the full 100% on screen briefly before opening.
+          timers.push(
+            window.setTimeout(() => setOpening(true), 550),
+            window.setTimeout(() => {
+              setVisible(false);
+              document.body.style.overflow = "";
+            }, 550 + OPEN_MS),
+          );
+        }
       }
-      if (!done) raf.current = requestAnimationFrame(tick);
+      if (!landed) raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
 
@@ -143,7 +152,7 @@ export function SiteLoader() {
       <div className="opening-status" aria-hidden={opening}>
         <div className="opening-meta">
           <span className="opening-phase">{phaseFor(pct)}</span>
-          <span className="opening-pct">{pct}%</span>
+          <span className="opening-pct" key={pct}>{pct}%</span>
         </div>
       </div>
     </div>
