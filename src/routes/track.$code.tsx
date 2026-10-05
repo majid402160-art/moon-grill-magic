@@ -414,7 +414,7 @@ export function PublicTrackPage() {
                       : { lat: RESTAURANT.lat + 0.008, lng: RESTAURANT.lng + 0.006 }
                   }
                   targetLabel={order.masked_address || "Delivery Location"}
-                  active={order.status === "onway"}
+                  rideStarted={order.status === "onway"}
                 />
               </div>
             )}

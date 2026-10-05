@@ -369,6 +369,8 @@ function seedOrders(riders: Rider[], customers: Customer[]): Order[] {
 
     orders.push({
       id: `ord-${i + 1}`,
+      orderType: "delivery",
+      source: "web",
       code: `KMG-${4200 + i}`,
       createdAt,
       customer: {
@@ -1601,6 +1603,8 @@ export function ingestStorefrontOrder(input: {
   const now = Date.now();
   const order: Order = {
     id: `ord-${now}`,
+    orderType: "delivery",
+    source: "web",
     code: input.code,
     createdAt: now,
     customer: {
