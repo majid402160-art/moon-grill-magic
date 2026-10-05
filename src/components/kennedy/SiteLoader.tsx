@@ -104,19 +104,26 @@ export function SiteLoader() {
       }
 
       const ready = (real >= 1 && elapsed >= MIN_MS) || elapsed >= MAX_MS;
-      if (ready && !done) {
-        done = true;
-        // Land exactly on 100% and hold it briefly before the curtains part.
-        setProgress(100);
-        timers.push(
-          window.setTimeout(() => setOpening(true), 650),
-          window.setTimeout(() => {
-            setVisible(false);
-            document.body.style.overflow = "";
-          }, 650 + OPEN_MS),
-        );
+      if (ready && !done) done = true;
+
+      if (done && !landed) {
+        // The page is ready: glide the counter the rest of the way so it
+        // always lands on a visible 100% before the curtains part.
+        eased += (100 - eased) * 0.16;
+        if (Math.round(eased) >= 100) {
+          landed = true;
+          setProgress(100);
+          // Hold the full 100% on screen briefly before opening.
+          timers.push(
+            window.setTimeout(() => setOpening(true), 550),
+            window.setTimeout(() => {
+              setVisible(false);
+              document.body.style.overflow = "";
+            }, 550 + OPEN_MS),
+          );
+        }
       }
-      if (!done) raf.current = requestAnimationFrame(tick);
+      if (!landed) raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
 
