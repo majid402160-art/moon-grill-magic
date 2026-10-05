@@ -86,6 +86,9 @@ export type MenuCategory = {
   dishes: BackendDish[];
 };
 
+/** True when a real backend is configured — demo dishes are never shown then. */
+export const BACKEND_MENU = isBackendConfigured();
+
 export const DISHES: Dish[] = [
   {
     slug: "spicy-white-pizza",
@@ -379,10 +382,11 @@ export async function fetchDishes(categorySlug?: string, forceRefresh = false): 
       cacheDishes(normalised);
       menuMemoryCache.set(key, { dishes: normalised, timestamp: Date.now() });
       return normalised;
-    } catch {
+    } catch (err) {
+      console.error("[menu] dishes fetch failed", err);
       const fallback = menuMemoryCache.get(key);
       if (fallback) return fallback.dishes;
-      return DISHES;
+      throw new Error("Could not load the menu from the server.");
     } finally {
       inFlightDishes.delete(key);
     }
