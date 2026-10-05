@@ -16,11 +16,11 @@ import { useEffect, useRef, useState } from "react";
 export const LOADER_SESSION_KEY = "kmg.loader.seen.v2";
 
 /** Never show for less than this — avoids an ugly one-frame blink. */
-const MIN_MS = 2200;
+const MIN_MS = 900;
 /** Hard ceiling: curtains open no matter what the network is doing. */
-const MAX_MS = 6000;
+const MAX_MS = 3000;
 /** Length of the curtain-open + stage-lift choreography (matches CSS). */
-const OPEN_MS = 2600;
+const OPEN_MS = 1200;
 
 const PHASES: Array<{ at: number; label: string }> = [
   { at: 0, label: "Lighting the stone oven" },
@@ -31,7 +31,7 @@ const PHASES: Array<{ at: number; label: string }> = [
 ];
 
 function phaseFor(p: number) {
-  let label = PHASES[0]!.label;
+  let label = PHASES[0]?.label ?? "Ready";
   for (const phase of PHASES) if (p >= phase.at) label = phase.label;
   return label;
 }
@@ -55,6 +55,8 @@ export function SiteLoader() {
 
     let real = 0; // 0..1 share of actual work finished
     let done = false;
+    let displayed = 0;
+    let eased = 0;
     const timers: number[] = [];
 
     // ---- real signals -----------------------------------------------------
@@ -90,24 +92,26 @@ export function SiteLoader() {
     // ---- eased meter ------------------------------------------------------
     const tick = () => {
       const elapsed = performance.now() - started;
-      // Time gives a trickle so the bar always breathes; real work leads it.
+      // Real readiness leads the count; publish only changed whole percentages.
       const trickle = Math.min(0.92, elapsed / MAX_MS);
       const target = Math.max(trickle, real) * 100;
-      setProgress((prev) => {
-        const next = prev + (target - prev) * 0.08;
-        return next > 99.6 ? 100 : next;
-      });
+      eased += (target - eased) * 0.08;
+      const next = Math.min(99, Math.round(eased));
+      if (next !== displayed) {
+        displayed = next;
+        setProgress(next);
+      }
 
       const ready = (real >= 1 && elapsed >= MIN_MS) || elapsed >= MAX_MS;
       if (ready && !done) {
         done = true;
         setProgress(100);
         timers.push(
-          window.setTimeout(() => setOpening(true), 260),
+          window.setTimeout(() => setOpening(true), 100),
           window.setTimeout(() => {
             setVisible(false);
             document.body.style.overflow = "";
-          }, 260 + OPEN_MS),
+          }, 100 + OPEN_MS),
         );
       }
       if (!done) raf.current = requestAnimationFrame(tick);
@@ -137,12 +141,9 @@ export function SiteLoader() {
         <i>FIRE. FLAVOUR. NAROWAL.</i>
       </div>
       <div className="opening-status" aria-hidden={opening}>
-        <div className="opening-bar">
-          <div className="opening-bar-fill" style={{ transform: `scaleX(${progress / 100})` }} />
-        </div>
         <div className="opening-meta">
           <span className="opening-phase">{phaseFor(pct)}</span>
-          <span className="opening-pct">{String(pct).padStart(3, "0")}%</span>
+          <span className="opening-pct">{pct}%</span>
         </div>
       </div>
     </div>
