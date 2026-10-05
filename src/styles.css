@@ -2795,9 +2795,9 @@ html[data-kmg-loader-seen] .opening { display: none; }
   color: var(--brass);
   font-variant-numeric: tabular-nums;
   letter-spacing: .02em;
-  font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+  font-size: clamp(2.1rem, 6.5vw, 3.6rem);
   line-height: 1;
-  min-width: 4ch;
+  min-width: 5ch;
   text-align: right;
   animation: pct-tick .28s cubic-bezier(.2,.8,.2,1) both;
 }
