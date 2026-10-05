@@ -54,7 +54,8 @@ export function SiteLoader() {
     document.body.style.overflow = "hidden";
 
     let real = 0; // 0..1 share of actual work finished
-    let done = false;
+    let done = false; // page is ready — glide to 100% from here
+    let landed = false; // counter has visibly hit 100%
     let displayed = 0;
     let eased = 0;
     const timers: number[] = [];
