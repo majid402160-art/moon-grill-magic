@@ -105,13 +105,14 @@ export function SiteLoader() {
       const ready = (real >= 1 && elapsed >= MIN_MS) || elapsed >= MAX_MS;
       if (ready && !done) {
         done = true;
+        // Land exactly on 100% and hold it briefly before the curtains part.
         setProgress(100);
         timers.push(
-          window.setTimeout(() => setOpening(true), 100),
+          window.setTimeout(() => setOpening(true), 650),
           window.setTimeout(() => {
             setVisible(false);
             document.body.style.overflow = "";
-          }, 100 + OPEN_MS),
+          }, 650 + OPEN_MS),
         );
       }
       if (!done) raf.current = requestAnimationFrame(tick);
@@ -143,7 +144,7 @@ export function SiteLoader() {
       <div className="opening-status" aria-hidden={opening}>
         <div className="opening-meta">
           <span className="opening-phase">{phaseFor(pct)}</span>
-          <span className="opening-pct">{pct}%</span>
+          <span className="opening-pct" key={pct}>{pct}%</span>
         </div>
       </div>
     </div>
