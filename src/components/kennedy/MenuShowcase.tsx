@@ -4,7 +4,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, ShoppingCart, ArrowRight, ArrowLeft, Search, Box } from "lucide-react";
 import { toast } from "sonner";
-import { DISHES, fetchDishes, arViewUrl, type Dish } from "@/lib/menu";
+import { DISHES, fetchDishes, BACKEND_MENU, arViewUrl, type Dish } from "@/lib/menu";
 import { addToCart, useWishlist } from "@/lib/cart";
 import { GiftRibbon } from "./GiftRibbon";
 
@@ -165,7 +165,7 @@ export function MenuShowcase() {
   const railRef = useRef<HTMLDivElement | null>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
 
-  const { data: dishes = DISHES, isLoading } = useQuery({
+  const { data: dishes = BACKEND_MENU ? [] : DISHES, isLoading } = useQuery({
     queryKey: ["menu-dishes"],
     queryFn: () => fetchDishes(),
     staleTime: 5 * 60 * 1000,

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { toast } from "sonner";
 
-import { fetchDishes, DISHES } from "@/lib/menu";
+import { fetchDishes, DISHES, BACKEND_MENU } from "@/lib/menu";
 import { addToCart } from "@/lib/cart";
 import { isMuted, playSfx } from "@/lib/sfx";
 import caddyAvatar from "@/assets/caddy-avatar.jpg";
@@ -50,7 +50,7 @@ function speak(text: string) {
 }
 
 export function MenuBook() {
-  const [dishes, setDishes] = useState<BookDish[]>(() => formatDishes(DISHES));
+  const [dishes, setDishes] = useState<BookDish[]>(() => (BACKEND_MENU ? [] : formatDishes(DISHES)));
   const pageCount = dishes.length + 1;
   const [open, setOpen] = useState<boolean[]>(() => Array(pageCount).fill(false));
   const coverOpen = open[0];
@@ -108,6 +108,8 @@ export function MenuBook() {
     playSfx("cart");
     toast.success(`${name} added to your order`);
   }, []);
+
+  if (dishes.length === 0) return null;
 
   return (
     <section id="menu-book" className="menu-scene" onClick={closeAll}>
