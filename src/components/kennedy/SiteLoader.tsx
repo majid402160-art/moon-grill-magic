@@ -1,5 +1,5 @@
 /**
- * SITE LOADER — premium theatre-curtain opening with real loading progress.
+ * SITE LOADER — lightweight Gold Signature reveal with real loading progress.
  *
  * Rendered on the very first paint (SSR included) so the curtains are up
  * before the site shows. An inline head script in __root sets
@@ -16,11 +16,11 @@ import { useEffect, useRef, useState } from "react";
 export const LOADER_SESSION_KEY = "kmg.loader.seen.v2";
 
 /** Never show for less than this — avoids an ugly one-frame blink. */
-const MIN_MS = 2200;
+const MIN_MS = 1400;
 /** Hard ceiling: curtains open no matter what the network is doing. */
 const MAX_MS = 6000;
 /** Length of the curtain-open + stage-lift choreography (matches CSS). */
-const OPEN_MS = 2600;
+const OPEN_MS = 700;
 
 const PHASES: Array<{ at: number; label: string }> = [
   { at: 0, label: "Lighting the stone oven" },
@@ -31,7 +31,7 @@ const PHASES: Array<{ at: number; label: string }> = [
 ];
 
 function phaseFor(p: number) {
-  let label = PHASES[0]!.label;
+  let label = PHASES[0]?.label ?? "Preparing";
   for (const phase of PHASES) if (p >= phase.at) label = phase.label;
   return label;
 }
@@ -94,7 +94,8 @@ export function SiteLoader() {
       const trickle = Math.min(0.92, elapsed / MAX_MS);
       const target = Math.max(trickle, real) * 100;
       setProgress((prev) => {
-        const next = prev + (target - prev) * 0.08;
+        const pacedTarget = Math.min(target, (elapsed / MIN_MS) * 100);
+        const next = prev + (pacedTarget - prev) * 0.08;
         return next > 99.6 ? 100 : next;
       });
 
@@ -127,23 +128,15 @@ export function SiteLoader() {
 
   return (
     <div className={`opening${opening ? " is-opening" : ""}`} role="status" aria-label="Loading Kennedy Moon Grill">
-      <div className="curtain curtain-left" />
-      <div className="curtain curtain-right" />
-      <div className="opening-glow" />
-      <div className="curtain-valance" />
+      <div className="opening-corner" aria-hidden="true" />
       <div className="opening-title" aria-hidden>
-        <span>Kennedy</span>
-        <strong>Moon Grill</strong>
+        <div className="opening-word-mask"><span>Kennedy</span></div>
+        <div className="opening-subtitle"><strong>Moon Grill</strong></div>
         <i>FIRE. FLAVOUR. NAROWAL.</i>
       </div>
       <div className="opening-status" aria-hidden={opening}>
-        <div className="opening-bar">
-          <div className="opening-bar-fill" style={{ transform: `scaleX(${progress / 100})` }} />
-        </div>
-        <div className="opening-meta">
-          <span className="opening-phase">{phaseFor(pct)}</span>
-          <span className="opening-pct">{String(pct).padStart(3, "0")}%</span>
-        </div>
+        <div className="opening-pct"><span className="opening-number">{pct}</span><span className="opening-percent">%</span></div>
+        <span className="opening-phase">{phaseFor(pct)}</span>
       </div>
     </div>
   );
