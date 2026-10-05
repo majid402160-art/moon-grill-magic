@@ -109,6 +109,8 @@ export function MenuBook() {
     toast.success(`${name} added to your order`);
   }, []);
 
+  if (dishes.length === 0) return null;
+
   return (
     <section id="menu-book" className="menu-scene" onClick={closeAll}>
       <div className="menu-scene__glow" aria-hidden="true" />
